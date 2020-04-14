@@ -8,13 +8,13 @@ using Statistics, DataFrames, CSV, Printf
 
 export run_epidemic_spreading_mmca!,
     Epidemic_Params,
-    reset_epi_param!,
+    epidemic_params,
     Population_Params,
-    update_population_param!,
-    setInitialInfected!,
+    population_params,
+    set_initial_infected!,
+    compute_R_eff,
     store_compartment,
-    store_R0,
-    correct_self_loops
+    store_R_eff
 
 # Load source from files
 include("markov_aux.jl")

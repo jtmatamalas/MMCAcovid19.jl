@@ -1,4 +1,3 @@
-
 """
     update_prob!(Pᵢᵍ::Array{Float64, 2},
                  Pᵢᴬᵍ::Array{Float64, 2},
@@ -7,14 +6,8 @@
                  τᵢᵍ::Array{Float64, 2},
                  epi_params::Epidemic_Params,
                  population::Population_Params,
-                 M::Int64,
-                 G::Int64,
-                 edgelist::Array{Int64, 2},
-                 Rᵢⱼ::Array{Float64, 1},
-                 C::Array{Float64, 2},
                  κ₀::Float64,
                  ϕ::Float64,
-                 pᵍ::Array{Float64, 1},
                  t::Int64,
                  tᶜ::Int64)
 
@@ -27,14 +20,8 @@ function update_prob!(Pᵢᵍ::Array{Float64, 2},
                       τᵢᵍ::Array{Float64, 2},
                       epi_params::Epidemic_Params,
                       population::Population_Params,
-                      M::Int64,
-                      G::Int64,
-                      edgelist::Array{Int64, 2},
-                      Rᵢⱼ::Array{Float64, 1},
-                      C::Array{Float64, 2},
                       κ₀::Float64,
                       ϕ::Float64,
-                      pᵍ::Array{Float64, 1},
                       t::Int64,
                       tᶜ::Int64)
 
@@ -59,12 +46,18 @@ function update_prob!(Pᵢᵍ::Array{Float64, 2},
     ρᴰᵍ = epi_params.ρᴰᵍ
     ρᴿᵍ = epi_params.ρᴿᵍ
     CHᵢᵍ = epi_params.CHᵢᵍ
+    G = population.G
+    M = population.M
+    pᵍ = population.pᵍ
+    C = population.C
+    edgelist = population.edgelist
+    Rᵢⱼ = population.Rᵢⱼ
 
     # Intervention at time tᶜ
     if tᶜ == t
         pᵍ[:] .= (1 - κ₀) .* pᵍ
         population.kᵍ[:] .= [population.σ - 1, (1 - κ₀) * population.kᵍ[2] + κ₀ * (population.σ - 1), population.σ - 1]
-        update_population_param!(population, pᵍ, edgelist, Rᵢⱼ, M, G)
+        update_population_params!(population)
     end
 
     # Get P and compute Q
@@ -116,6 +109,7 @@ function update_prob!(Pᵢᵍ::Array{Float64, 2},
     end
 end
 
+
 """
     compute_P!(Pᵢᵍ::Array{Float64, 2},
                     Pᵢᴬᵍ::Array{Float64, 2},
@@ -139,7 +133,7 @@ end
                     G::Int64,
                     t::Int64)
 
-Function to compute ``P_i^g(t)`` and ``Q_i^g(t)`` as described in the referenced paper.
+Compute ``P_i^g(t)`` and ``Q_i^g(t)`` as described in the referenced paper.
 """
 function compute_P!(Pᵢᵍ::Array{Float64, 2},
                     Pᵢᴬᵍ::Array{Float64, 2},
@@ -206,70 +200,64 @@ function compute_P!(Pᵢᵍ::Array{Float64, 2},
     end
 end
 
+
 """
-    run_epidemic_spreading_mmca!(epi_param::Epidemic_Params,
-                                 population::Population_Params,
-                                 M::Int64,
-                                 G::Int64,
-                                 edgelist::Array{Int64,2},
-                                 Rᵢⱼ::Array{Float64,1},
-                                 C::Array{Float64,2},
-                                 pᵍ::Array{Float64,1},
-                                 timesteps::Int64;
+    print_status(epi_params::Epidemic_Params,
+                 population::Population_Params,
+                 t::Int64)
+
+Print the status of the epidemic spreading.
+"""
+function print_status(epi_params::Epidemic_Params,
+                      population::Population_Params,
+                      t::Int64)
+    players = sum((epi_params.ρˢᵍ[:, :, t] .+ epi_params.ρᴱᵍ[:, :, t] .+ epi_params.ρᴬᵍ[:, :, t] .+
+                   epi_params.ρᴵᵍ[:, :, t] .+ epi_params.ρᴿᵍ[:, :, t] .+ epi_params.ρᴴᵍ[:, :, t] .+
+                   epi_params.ρᴰᵍ[:, :, t]) .* population.nᵢᵍ[:, :])
+    infected = sum(epi_params.ρᴵᵍ[:, :, t] .* population.nᵢᵍ[:, :] + epi_params.ρᴬᵍ[:, :, t] .* population.nᵢᵍ[:, :])
+    cases = sum((epi_params.ρᴿᵍ[:, :, t] .+ epi_params.ρᴴᵍ[:, :, t] .+ epi_params.ρᴰᵍ[:, :, t]) .* population.nᵢᵍ[:, :])
+    icus = sum(epi_params.ρᴴᵍ[:, :, t] .* population.nᵢᵍ[:, :])
+    deaths = sum(epi_params.ρᴰᵍ[:, :, t] .* population.nᵢᵍ[:, :])
+
+    @printf("Time: %d, players: %.2f, infected: %.2f, cases: %.2f, icus: %.2f, deaths: %.2f\n", t, players, infected, cases, icus, deaths)
+end
+
+
+"""
+    run_epidemic_spreading_mmca!(epi_params::Epidemic_Params,
+                                 population::Population_Params;
+                                 t₀::Int64 = 1,
+                                 tᶜ::Int64 = -1,
                                  κ₀::Float64 = 0.0,
                                  ϕ::Float64 = 1.0,
-                                 tᶜ::Int64 = -1,
-                                 t₀::Int64 = 1,
                                  verbose::Bool = false)
 
-This functions computes the evolution of the epidemic parameters over time,
-updating the variables stored in epi_param. It also provides, through optional
-arguments, the application of a containmnet on specific date.
+Computes the evolution of the epidemic spreading over time, updating the variables stored in epi_params. It also provides, through optional arguments, the application of a containmnet on a specific date.
 
 # Arguments
 
-- `epi_param::Epidemic_Params`: Structure that contains all related epidemic
-  parameters (see `Epidemic_Params` documentation for more infomation), including
-  the ones that will be updated.
-- `population::Population_Params`: Structure that contains all the parameters
-  related with the population, (see `Population_Params` documentation for more
-  information).
-- `M::Int64`: Number of patches.
-- `G::Int64`: Number of stratifications of the population.
-- `edgelist::Array{Float64, 2}`: ``M \\times 2`` matrix containing the directed
-  edgelist between patches. The IDs of the patches have to go from 1 to M
-- `Rᵢⱼ::Array{Float64, 1}`: Vector containing the transition probabilities for
-  each edge in the edgelist.
-- `C::Array{Float64, 2}`: ``G \\times G`` contact matrix containing the
-  probabilities of contact between different population strata.
-- `pᵍ::Array{Float64, 1}`: Degree of mobility of each strata ranged between 0 and 1.
-- `timesteps::Int64`: Number of timesteps to evolve the system.
+- `epi_params::Epidemic_Params`: Structure that contains all epidemic parameters and the epidemic spreading information.
+- `population::Population_Params`: Structure that contains all the parameters related with the population.
 
 ## Optional
 
+- `t₀::Int64 = 1`: Initial timestep (useful to define multiple containment strategies).
+- `tᶜ::Int64 = -1`: Timestep where the confinment measures is applied, -1 for no containment.
 - `κ⁰::Float64 = 0.0`: Confinement factor.
 - `ϕ::Float64 = 1.0`: Permeability factor.
-- `tᶜ::Int64 = -1`: Timestep where the confinment measures will be applied.
-- `t₀::Int64 = 1`: Initial timestep (useful to define multiple containment
-  strategies).
-- `verbose::Bool = false`: if it is set to `true` it prints useful information
-  about the evolution of the epidemic process.
+- `verbose::Bool = false`: If `true`, prints useful information about the evolution of the epidemic process.
 """
-function run_epidemic_spreading_mmca!(epi_param::Epidemic_Params,
-                                      population::Population_Params,
-                                      M::Int64,
-                                      G::Int64,
-                                      edgelist::Array{Int64, 2},
-                                      Rᵢⱼ::Array{Float64, 1},
-                                      C::Array{Float64, 2},
-                                      pᵍ::Array{Float64, 1},
-                                      timesteps::Int64;
+function run_epidemic_spreading_mmca!(epi_params::Epidemic_Params,
+                                      population::Population_Params;
+                                      t₀::Int64 = 1,
+                                      tᶜ::Int64 = -1,
                                       κ₀::Float64 = 0.,
                                       ϕ::Float64 = 1.,
-                                      tᶜ::Int64 = -1,
-                                      t₀::Int64 = 1,
-                                      verbose::Bool = false
-                                      )
+                                      verbose::Bool = false)
+
+    G = population.G
+    M = population.M
+    T = epi_params.T
 
     # Initialize τᵢ (Π = (1 - p) P + pτ) and Pᵢ for markov chain
     τᵢᵍ = zeros(Float64, G, M)
@@ -280,20 +268,17 @@ function run_epidemic_spreading_mmca!(epi_param::Epidemic_Params,
     Pᵢᴵᵍ = zeros(Float64, G, M)
     Sᵢᵍ = zeros(Float64, G, M)
 
+    # Initial state
+    if verbose
+        print_status(epi_params, population, t₀)
+    end
+
     # Start loop for time evoluiton
-    @inbounds for t in t₀:(timesteps - 1)
-        update_prob!(Pᵢᵍ, Pᵢᴬᵍ, Pᵢᴵᵍ, Sᵢᵍ, τᵢᵍ, epi_param, population, M, G, edgelist, Rᵢⱼ, C, κ₀, ϕ, pᵍ, t, tᶜ)
+    for t in t₀:(T - 1)
+        update_prob!(Pᵢᵍ, Pᵢᴬᵍ, Pᵢᴵᵍ, Sᵢᵍ, τᵢᵍ, epi_params, population, κ₀, ϕ, t, tᶜ)
 
         if verbose
-            players = sum((epi_param.ρˢᵍ[:, :, t] .+ epi_param.ρᴱᵍ[:, :, t] .+ epi_param.ρᴬᵍ[:, :, t] .+
-                           epi_param.ρᴵᵍ[:, :, t] .+ epi_param.ρᴿᵍ[:, :, t] .+ epi_param.ρᴴᵍ[:, :, t] .+
-                           epi_param.ρᴰᵍ[:, :, t]) .* population.nᵢᵍ[:, :])
-            cases = sum((epi_param.ρᴿᵍ[:, :, t] .+ epi_param.ρᴴᵍ[:, :, t] .+ epi_param.ρᴰᵍ[:, :, t]) .* population.nᵢᵍ[:, :])
-            hospital = sum(epi_param.ρᴴᵍ[:, :, t] .* population.nᵢᵍ[:, :])
-            deaths = sum(epi_param.ρᴰᵍ[:, :, t] .* population.nᵢᵍ[:, :])
-            infected = sum(epi_param.ρᴵᵍ[:, :, t] .* population.nᵢᵍ[:, :] + epi_param.ρᴬᵍ[:, :, t] .* population.nᵢᵍ[:, :])
-
-            @printf("Time: %d, players: %.2f, infected: %.2f, cases: %.2f, hospital: %.2f, deaths: %.2f\n", t, players, infected, cases, hospital, deaths)
+            print_status(epi_params, population, t + 1)
         end
     end
 end
