@@ -8,9 +8,7 @@ using Statistics, DataFrames, CSV, Printf
 
 export run_epidemic_spreading_mmca!,
     Epidemic_Params,
-    epidemic_params,
     Population_Params,
-    population_params,
     set_initial_infected!,
     compute_R_eff,
     store_compartment,
