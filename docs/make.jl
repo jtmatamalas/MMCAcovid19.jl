@@ -10,5 +10,5 @@ makedocs(sitename = "MMCAcovid19.jl",
          )
 
 deploydocs(
-    repo = "github.com/jtmatamalas/MMCAcovid19.jl.git",
+    repo = "github.com/jtmatamalas/MMCAcovid19.jl.git"
 )
