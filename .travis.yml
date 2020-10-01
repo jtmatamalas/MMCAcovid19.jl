@@ -1,18 +1,16 @@
 language: julia
 
 julia:
+  - 1.5
+  - 1.4
   - 1.0
-  - 1
   - nightly
 
 os:
   - linux
-  - osx
-  - windows
 
 arch:
   - amd64
-  - i386
 
 notifications:
   email: false
@@ -25,7 +23,7 @@ jobs:
     - julia: nightly
   include:
     - stage: "Documentation"
-      julia: 1.0
+      julia: 1.5
       os: linux
       script:
         - julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd()));
