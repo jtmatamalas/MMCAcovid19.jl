@@ -8,3 +8,7 @@ makedocs(sitename = "MMCAcovid19.jl",
              "Library" => "library.md"
          ]
          )
+
+deploydocs(
+    repo = "github.com/jtmatamalas/MMCAcovid19.jl.git",
+)
