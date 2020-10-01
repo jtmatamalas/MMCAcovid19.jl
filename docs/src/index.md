@@ -1,6 +1,12 @@
-# MMCAcovid19.jl
+
+# Overview
 
 The 2020 worldwide COVID-19 epidemic outbreak is probably one of the major challenges faced by humanity in our currently highly interconnected society. While a functional vaccine is developed, we must rely only on non-pharmaceutical interventions, which include mobility restrictions, confinement, social distancing, partial lockdown, or total lockdown of non-essential services. The effective evaluation of any of these policies requires a detailed enough modeling of the spreading of this epidemics.
+
+```@contents
+  Pages = ["index.md", "getting_started.md", "library.md"]
+  Depth = 2
+```
 
 
 ## Model
@@ -35,7 +41,7 @@ As is common practice in the description of epidemic spreading, we have consider
 
 The transitions between compartments, including their corresponding epidemic parameters, are:
 
-![Model](Fig-model.png)
+![Model](figs/Fig-model.png)
 
 Once all the information about population and epidemic parameters is introduced, the model is capable of predicting the evolution of the disease at the level of patch and for each of the epidemic compartments. Since MMCA is a discrete time formalism, we have selected a time resolution of a day, the natural one to account for contacts, mobility and epidemic rates.
 
@@ -86,6 +92,7 @@ This package allows the application of multiple containment measures at differen
 - [Benjamin Steinegger](https://twitter.com/stinomat) (Universitat Rovira i Virgili, Tarragona, Spain)
 
 
-## Documentation
+## Index
 
-The full documentation of [MMCAcovid19](https://github.com/jtmatamalas/MMCAcovid19) can be found [here](docs/build/index.html).
+```@index
+```

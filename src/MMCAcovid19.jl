@@ -10,6 +10,7 @@ export run_epidemic_spreading_mmca!,
     Epidemic_Params,
     Population_Params,
     set_initial_infected!,
+    reset_params!,
     compute_R_eff,
     store_compartment,
     store_R_eff
