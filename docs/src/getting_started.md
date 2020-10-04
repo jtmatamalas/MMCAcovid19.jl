@@ -10,13 +10,13 @@
 
 ## Installation and usage
 
-1. Download the source files in folder `src` of [MMCAcovid19.jl](https://github.com/jtmatamalas/MMCAcovid19.jl)
-2. Put them in a folder, e.g., `"./MMCAcovid19"`.
-3. In your Julia file, add the folder to your LOAD_PATH.
-4. Load the `"MMCAcovid19` module.
-
+Installation:
 ```julia
-push!(LOAD_PATH, "./MMCAcovid19")
+] add MMCAcovid19
+```
+
+Usage:
+```julia
 using MMCAcovid19
 ```
 
