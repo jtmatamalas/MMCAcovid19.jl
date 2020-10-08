@@ -1,7 +1,7 @@
 name = "MMCAcovid19"
 uuid = "3fbf9143-36f1-400e-9c84-fa51782749e9"
 authors = ["Joan T. Matamalas <jtmatamalas@gmail.com>", "Sergio Gómez <sergio.gomez@urv.cat>"]
-version = "0.1.0"
+version = "0.1.1"
 
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
