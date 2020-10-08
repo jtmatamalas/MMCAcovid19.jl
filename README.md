@@ -95,4 +95,4 @@ The full documentation of [MMCAcovid19](https://github.com/jtmatamalas/MMCAcovid
 
 
 [docs-latest-img]: https://img.shields.io/badge/docs-latest-blue.svg
-[docs-latest-url]: http://jtmatamalas.github.io/MMCAcovid19.jl/dev/
+[docs-latest-url]: http://jtmatamalas.github.io/MMCAcovid19.jl/v0.1/
