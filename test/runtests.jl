@@ -129,6 +129,8 @@ end
 ## Initialization of the epidemics
 ## -----------------------------------------------------------------------------
 
+E₀ = zeros(G, M)
+
 A₀ = zeros(G, M)
 A₀[2, 5] = 2.0
 A₀[3, 3] = 1.0
@@ -136,15 +138,15 @@ A₀[3, 3] = 1.0
 I₀ = zeros(G, M)
 I₀[2, 5] = 1.0
 
-set_initial_infected!(epi_params, population, A₀, I₀)
+set_initial_infected!(epi_params, population, E₀, A₀, I₀)
 
 
 ## Test Initialization of the epidemics
 @testset "Initialization_Epidemics" begin
 
     @test sum(population.nᵢᵍ .* epi_params.ρˢᵍ[:, :, 1]) ≈
-        population.N - (sum(A₀) + sum(I₀))  atol=0.0001
-    @test sum(population.nᵢᵍ .* epi_params.ρᴱᵍ[:, :, 1]) ≈ 0.0  atol=0.0001
+        population.N - (sum(E₀) + sum(A₀) + sum(I₀))  atol=0.0001
+    @test sum(population.nᵢᵍ .* epi_params.ρᴱᵍ[:, :, 1]) ≈ sum(E₀)  atol=0.0001
     @test sum(population.nᵢᵍ .* epi_params.ρᴬᵍ[:, :, 1]) ≈ sum(A₀)  atol=0.0001
     @test sum(population.nᵢᵍ .* epi_params.ρᴵᵍ[:, :, 1]) ≈ sum(I₀)  atol=0.0001
     @test sum(population.nᵢᵍ .* epi_params.ρᴾᴴᵍ[:, :, 1]) ≈ 0.0  atol=0.0001

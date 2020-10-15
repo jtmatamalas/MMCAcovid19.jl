@@ -522,17 +522,20 @@ end
 """
     set_initial_infected!(epi_params::Epidemic_Params,
                           population::Population_Params,
+                          E₀::Array{Float64, 2},
                           A₀::Array{Float64, 2},
                           I₀::Array{Float64, 2})
 
 Set the initial number of infected individuals on a population. They can be
-introduced as asymptomatic (A) or Symptomatic (I) individuals.
+introduced as exposed (E), asymptomatic (A) or symptomatic (I) individuals.
 
 # Arguments
 - `epi_params::Epidemic_Params`: Structure that contains all epidemic parameters
   and the epidemic spreading information.
 - `population::Population_Params`: Structure that contains all the parameters
   related with the population.
+- `E₀::Array{Float64, 2}`: Matrix of size ``G \\times M`` containing the number
+  of exposed individuals of each strata on each patch.
 - `A₀::Array{Float64, 2}`: Matrix of size ``G \\times M`` containing the number
   of asymptomatic infected individuals of each strata on each patch.
 - `I₀::Array{Float64, 2}`: Matrix of size ``G \\times M`` containing the number
@@ -540,10 +543,14 @@ introduced as asymptomatic (A) or Symptomatic (I) individuals.
 """
 function set_initial_infected!(epi_params::Epidemic_Params,
                                population::Population_Params,
+                               E₀::Array{Float64, 2},
                                A₀::Array{Float64, 2},
                                I₀::Array{Float64, 2})
 
     t₀ = 1
+
+    # Initial exposed population
+    @. epi_params.ρᴱᵍ[:, :, t₀] = E₀ / population.nᵢᵍ
 
     # Initial asymptomatic population
     @. epi_params.ρᴬᵍ[:, :, t₀] = A₀ / population.nᵢᵍ
@@ -552,11 +559,14 @@ function set_initial_infected!(epi_params::Epidemic_Params,
     @. epi_params.ρᴵᵍ[:, :, t₀] = I₀ / population.nᵢᵍ
 
     # Control over division by zero
+    epi_params.ρᴱᵍ[isnan.(epi_params.ρᴱᵍ)] .= 0
     epi_params.ρᴬᵍ[isnan.(epi_params.ρᴬᵍ)] .= 0
     epi_params.ρᴵᵍ[isnan.(epi_params.ρᴵᵍ)] .= 0
 
     # Update the fraction of suceptible individual
-    @. epi_params.ρˢᵍ[:, :, t₀] = 1 - epi_params.ρᴵᵍ[:, :, t₀] - epi_params.ρᴬᵍ[:, :, t₀]
+    @. epi_params.ρˢᵍ[:, :, t₀] = 1 - (epi_params.ρᴱᵍ[:, :, t₀] +
+                                       epi_params.ρᴬᵍ[:, :, t₀] +
+                                       epi_params.ρᴵᵍ[:, :, t₀])
 
     nothing
 end

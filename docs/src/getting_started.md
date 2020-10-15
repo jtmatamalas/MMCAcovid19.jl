@@ -219,9 +219,12 @@ epi_params = Epidemic_Params(βᴵ, βᴬ, ηᵍ, αᵍ, μᵍ, θᵍ, γᵍ, ζ
 
 ### Initialization of the epidemics
 
-The initialization of the epidemic spreading is performed by introducing the number of infected individuals (both asymptomatic and symptomatic) at each patch and strata.
+The initialization of the epidemic spreading is performed by introducing the initial number of infected individuals (exposed, asymptomatic and symptomatic) at each patch and strata.
 
 ```@example gettingstarted
+# Initial number of exposed individuals
+E₀ = zeros(G, M)
+
 # Initial number of infectious asymptomatic individuals
 A₀ = zeros(G, M)
 A₀[2, 5] = 2.0
@@ -230,6 +233,15 @@ A₀[3, 3] = 1.0
 # Initial number of infectious symptomatic individuals
 I₀ = zeros(G, M)
 I₀[2, 5] = 1.0
+
+println("Initial number of exposed E₀:") # hide
+for g in 1:G # hide
+  print(string("  ", g, ":")) # hide
+  for i in 1:M # hide
+    @printf("%5.1f", E₀[g, i]) # hide
+  end # hide
+  println() # hide
+end # hide
 
 println("Initial number of infectious asymptomatic A₀:") # hide
 for g in 1:G # hide
@@ -253,7 +265,7 @@ end # hide
 Now we apply the initialization:
 
 ```julia
-set_initial_infected!(epi_params, population, A₀, I₀)
+set_initial_infected!(epi_params, population, E₀, A₀, I₀)
 ```
 
 
