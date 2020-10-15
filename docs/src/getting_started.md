@@ -320,7 +320,7 @@ population = Population_Params(G, M, nᵢᵍ, kᵍ, kᵍ_h, kᵍ_w, C, pᵍ, edg
 epi_params = Epidemic_Params(βᴵ, βᴬ, ηᵍ, αᵍ, μᵍ, θᵍ, γᵍ, ζᵍ, λᵍ, ωᵍ, ψᵍ, χᵍ, G, M, T)
 
 # Initialization of infectious people
-set_initial_infected!(epi_params, population, A₀, I₀)
+set_initial_infected!(epi_params, population, E₀, A₀, I₀)
 ```
 
 With this information we can run the model:
