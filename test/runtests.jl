@@ -219,7 +219,7 @@ tᶜ = 30
 ϕ = 0.174
 δ = 0.207
 
-set_initial_infected!(epi_params, population, A₀, I₀)
+set_initial_infected!(epi_params, population, E₀, A₀, I₀)
 run_epidemic_spreading_mmca!(epi_params, population; tᶜ = tᶜ, κ₀ = κ₀, ϕ = ϕ,
                              δ = δ, verbose = false)
 
@@ -252,7 +252,7 @@ tᶜs = [30, 60, 90, 120]
 δs = [0.207, 0.207, 0.207, 0.207]
 
 reset_params!(epi_params, population)
-set_initial_infected!(epi_params, population, A₀, I₀)
+set_initial_infected!(epi_params, population, E₀, A₀, I₀)
 run_epidemic_spreading_mmca!(epi_params, population, tᶜs, κ₀s, ϕs, δs; verbose = false)
 
 
