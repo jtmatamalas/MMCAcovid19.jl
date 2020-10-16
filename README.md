@@ -91,7 +91,7 @@ This package allows the application of multiple containment measures at differen
 
 ## Documentation
 
-The full documentation of [MMCAcovid19](https://github.com/jtmatamalas/MMCAcovid19) can be found [here](https://jtmatamalas.github.io/MMCAcovid19.jl/dev/).
+The full documentation of [MMCAcovid19](https://github.com/jtmatamalas/MMCAcovid19) can be found [here][docs-latest-url]
 
 
 [docs-latest-img]: https://img.shields.io/badge/docs-latest-blue.svg
