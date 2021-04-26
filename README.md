@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.com/jtmatamalas/MMCAcovid19.jl.svg?branch=master)](https://travis-ci.com/jtmatamalas/MMCAcovid19.jl)
 [![][docs-latest-img]][docs-latest-url]
+[![DOI](https://zenodo.org/badge/253392606.svg)](https://zenodo.org/badge/latestdoi/253392606)
 
 The 2020 worldwide COVID-19 epidemic outbreak is probably one of the major challenges faced by humanity in our currently highly interconnected society. While a functional vaccine is developed, we must rely only on non-pharmaceutical interventions, which include mobility restrictions, confinement, social distancing, partial lockdown, or total lockdown of non-essential services. The effective evaluation of any of these policies requires a detailed enough modeling of the spreading of this epidemics.
 
